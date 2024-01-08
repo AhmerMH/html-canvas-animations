@@ -1,14 +1,23 @@
+const TOP_NAV_HEIGHT = 100;
+
+const NO_OF_BALLS = 300;
+const MAX_HOVER_RADIUS_LIMIT = 100;
+const MAX_RADIUS_LIMIT = 25;
+const MIN_RADIUS_LIMIT = 2;
+const MIN_VELOCITY = 1;
+const MAX_VELOCITY = 3;
+
+
 let canvas = document.querySelector('canvas');
 let clientWidth = window.innerWidth;
 let clientHeight = window.innerHeight;
 
 canvas.width = clientWidth;
-canvas.height = clientHeight;
+canvas.height = clientHeight - TOP_NAV_HEIGHT;
 
 let c = canvas.getContext('2d');
 
-const MAX_RADIUS_LIMIT = 50;
-const MIN_RADIUS_LIMIT = 2;
+let balls = [];
 
 const colors = [
   '#FFBF00',
@@ -29,7 +38,7 @@ window.addEventListener('resize', () => {
   clientWidth = window.innerWidth;
   clientHeight = window.innerHeight;
   canvas.width = clientWidth;
-  canvas.height = clientHeight - TOP_NAV_HEIGHT;
+  canvas.height = clientHeight;
   init();
 });
 
@@ -52,11 +61,11 @@ const getRandomYCordinate = (radius) => {
   return Math.random() * (clientHeight - radius * 2) + radius;
 };
 
-const getRandomRadius = (minRange = MIN_RADIUS_LIMIT, maxRange = 20) => {
+const getRandomRadius = (minRange = MIN_RADIUS_LIMIT, maxRange = MAX_RADIUS_LIMIT) => {
   return Math.random() * (maxRange - minRange) + minRange;
 };
 
-const getRandomVelocity = (minRange = 1, maxRange = 1) => {
+const getRandomVelocity = (minRange = MIN_VELOCITY, maxRange = MAX_VELOCITY) => {
   return Math.random() * (maxRange - minRange) + minRange;
 };
 
@@ -89,7 +98,7 @@ function Ball(radius, dx, dy) {
     this.y += this.dy;
 
     if (mouse.x - this.x < 50 && mouse.x - this.x > -50 && mouse.y - this.y < 50 && mouse.y - this.y > -50) {
-      if (this.radius < MAX_RADIUS_LIMIT) {
+      if (this.radius < MAX_HOVER_RADIUS_LIMIT) {
         this.radius += 1;
       }
     } else if (this.radius > this.initialRadius) {
@@ -99,11 +108,6 @@ function Ball(radius, dx, dy) {
     this.draw();
   }
 };
-
-let ball = new Ball(25, 5, 5);
-
-let balls = [];
-const noOfBalls = 50;
 
 function animate() {
   requestAnimationFrame(animate);
@@ -118,11 +122,12 @@ function animate() {
 // init
 const init = () => {
   balls = [];
-  for (let index = 0; index < noOfBalls; index++) {
+  for (let index = 0; index < NO_OF_BALLS; index++) {
+    const direction = getRandomVelocity(-1, 1);
     balls.push(
       new Ball(getRandomRadius(),
-        getRandomVelocity() * (index % 2 === 0 ? -1 : 1),
-        getRandomVelocity() * (index % 6 === 0 ? -1 : 1))
+        getRandomVelocity() * direction,
+        getRandomVelocity() * direction)
     );
   }
 };
